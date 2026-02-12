@@ -23,7 +23,7 @@ app.use(express.json());
 
  
 app.use(cors({
-  origin: 'https://booking-hotel-3.onrender.com', // frontend Render URL
+  origin: 'https://booking-hotel-5.onrender.com', // frontend Render URL
   credentials: true
 }));
 
