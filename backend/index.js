@@ -20,10 +20,14 @@ connectDB();
 
 // middlewares
 app.use(express.json());
+
+ 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: 'https://booking-hotel-3.onrender.com', // frontend Render URL
   credentials: true
 }));
+
+
 app.use(cookieParser());
 
 // route api endpoints
