@@ -1,57 +1,63 @@
 import Room from "../models/room.model.js";
+import Hotel from "../models/hotel.model.js";
 
 // add a new room
+export const addRoom = async (req, res) => {
+  try {
+    const ownerId = req.user.id;
+    const { hotel, roomType, pricePerNight, description, amenities, isAvailable } = req.body;
+    const images = req.files?.map(file => file.filename);
 
-export const addRoom = async (req , res ) => {
-    try {
-        const {
-            roomType,
-            hotel,
-            pricePerNight,
-            description,
-            amenities,
-            isAvailable,
-        } = req.body;
-const images = req.files?.map (file => file.filename);
+    const foundHotel = await Hotel.findOne({ _id: hotel, owner: ownerId });
 
-const newRoom = await Room.create({
-    roomType,
-    hotel,
-    pricePerNight,
-    description,
-    amenities,
-    isAvailable,
-    images: images,
-}) ;
-
-return res
-     .status(201)
-     .json({ message: "Room added successfully", success: true});
-
-    } catch (error) {
-        return res.status(500).json({
-            message: "Internal server error"
-        });
+    if (!foundHotel) {
+      return res.status(404).json({ success: false, message: "Hotel not found" });
     }
+
+    const newRoom = await Room.create({
+      hotel,
+      roomType,
+      pricePerNight,
+      description,
+      amenities,
+      isAvailable,
+      images,
+    });
+
+    res.status(201).json({ success: true, message: "Room added successfully", room: newRoom });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
+
 
 
 // get all rooms for a specific owner
-
 export const getOwnerRooms = async (req , res) => {
-    try{
-        const { id } = req.user;
-        const rooms = await Room.find().populate({
-            path: "hotel" ,
-            match: { owner: id},
-            select: "hotelName hotelAddress rating amenities",
-        });
-        const ownerRooms = rooms.filter((room) => room.hotel.owner === id);
-        return res.status(200).json({ rooms, success: true});
-    } catch (error) {
-        return res.status(500).json({ message: "Internal server error"});
-    }
+  try {
+    const ownerId = req.user.id; // owner id
+
+    // Sab rooms leke aao jisme hotel.owner = ownerId
+    const rooms = await Room.find()
+      .populate({
+        path: "hotel",
+        select: "hotelName hotelAddress rating owner",
+      });
+
+    // filter rooms jisme hotel exists and hotel.owner match
+    const ownerRooms = rooms.filter(
+      (room) => room.hotel && room.hotel.owner.toString() === ownerId
+    );
+
+    return res.status(200).json({ success: true, rooms: ownerRooms });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
+
 
 // get all rooms for users
 

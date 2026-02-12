@@ -25,10 +25,10 @@ import {
 } from 'lucide-react';
 
 const SingleRoom = () => {
-  const { roomsData , axios, navigate} = useContext(AppContext);
+  const { roomData , axios, navigate} = useContext(AppContext);
   const { id } = useParams();
 
-  const room = roomsData?.find((r) => r._id === id);
+  const room = roomData?.find((r) => r._id === id);
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [bookingData, setBookingData] = useState({

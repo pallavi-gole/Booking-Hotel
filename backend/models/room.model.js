@@ -14,7 +14,7 @@ const hotelRoomSchema = new mongoose.Schema(
     roomType: { type: String, required: true},
     pricePerNight: {type: Number, required: true},
     description: {type: String, required: true},
-images: {type: [String], required: true},
+images: {type: [String], default:[]},
     amenities: {type: String, required: true},
     isAvailable: {type: Boolean, default: true},
     

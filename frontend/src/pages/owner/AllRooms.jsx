@@ -2,48 +2,47 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { MapPin, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 const AllRooms = () => {
-  const {  navigate,axios } = useContext(AppContext);
+  const { navigate, axios } = useContext(AppContext);
 
+  const [roomData, setRoomData] = useState([]);
 
-  const[roomData, setRoomData] = useState([]);
-
-  const fetchOwnerRooms= async()=>{
-try {
- const {data} =await axios.get("/api/room/get");
- if(data.success) {
-  setRoomData(data.rooms);
- } else{
-  toast.error(data.message);
- }
-} catch (error) {
-toast.error(error.message);
-}
-  };
-useEffect(() => {
-  fetchOwnerRooms();
-}, []);
-
-
-const deleteRoom= async(id)=>{
-  try{
-    const {data} = await axios.delete("/api/room/delete/"+ id);
-    if(data.success){
-      toast.success(data.message);
-      fetchOwnerRooms();
-    } else {
-      toast.error(data.message);
+  const fetchOwnerRooms = async () => {
+    try {
+      const { data } = await axios.get("/api/room/get");
+      if (data.success) {
+        setRoomData(data.rooms);
+      } else {
+        toast.error(data.message || "Failed to fetch rooms");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
     }
-  } catch (error) {
-toast.error(error.message);
-  }
-};
+  };
+
+  useEffect(() => {
+    fetchOwnerRooms();
+  }, []);
+
+  const deleteRoom = async (id) => {
+    try {
+      const { data } = await axios.delete("/api/room/delete/" + id);
+      if (data.success) {
+        toast.success(data.message);
+        fetchOwnerRooms();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto">
-
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-white rounded-2xl shadow-xl p-6">
           <div>
@@ -67,7 +66,6 @@ toast.error(error.message);
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-
               <thead className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold">Hotel</th>
@@ -81,24 +79,25 @@ toast.error(error.message);
               </thead>
 
               <tbody className="divide-y divide-gray-100">
-
                 {roomData?.map((room, index) => (
                   <tr
                     key={room?._id}
-                    className={`hover:bg-blue-50 ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
+                    className={`hover:bg-blue-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
                   >
                     {/* Hotel */}
                     <td className="px-6 py-6">
                       <div className="flex items-center space-x-4">
                         <img
-                          src={`http://localhost:4000/images/${room.images[0]}`}
-                          alt={room?.roomType}
+                          src={
+                            room?.images?.[0]
+                              ? `http://localhost:4000/images/${room.images[0]}`
+                              : "https://via.placeholder.com/100"
+                          }
+                          alt={room?.roomType || "Room Image"}
                           className="w-20 h-16 rounded-xl object-cover shadow-md"
                         />
                         <h3 className="text-lg font-semibold text-gray-800">
-                          {room?.hotelName}
+                          {room?.hotel?.hotelName || "N/A"}
                         </h3>
                       </div>
                     </td>
@@ -107,25 +106,24 @@ toast.error(error.message);
                     <td className="px-6 py-6">
                       <div className="flex items-center space-x-2">
                         <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm">{room?.roomType}</span>
+                        <span className="text-sm">{room?.roomType || "N/A"}</span>
                       </div>
                     </td>
 
                     {/* Location */}
                     <td className="px-6 py-6 text-sm text-gray-600">
-                      {room?.hotel?.hotelAddress}
+                      {room?.hotel?.hotelAddress || "N/A"}
                     </td>
 
                     {/* Rating */}
                     <td className="px-6 py-6 text-sm text-gray-600">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      {room?.hotel?.rating}
+                      {room?.hotel?.rating || 0}
                     </td>
 
                     {/* Price */}
                     <td className="px-6 py-6 flex items-center gap-1">
-                      
-                      <span>${room?.pricePerNight}</span>
+                      <span>${room?.pricePerNight || 0}</span>
                     </td>
 
                     {/* Amenities */}
@@ -138,20 +136,21 @@ toast.error(error.message);
                           >
                             {amenity}
                           </span>
-                        ))}
+                        )) || "N/A"}
                       </div>
                     </td>
 
                     {/* Action */}
                     <td className="px-6 py-6">
-                      <button onClick={() => deleteRoom(room._id)} 
-                      className="bg-red-500 text-white px-4 py-1 rounded-full">
+                      <button
+                        onClick={() => deleteRoom(room._id)}
+                        className="bg-red-500 text-white px-4 py-1 rounded-full"
+                      >
                         Delete
                       </button>
                     </td>
                   </tr>
                 ))}
-
               </tbody>
             </table>
           </div>

@@ -64,7 +64,7 @@ export const bookRoom = async (req,res) => {
             checkOutDate,
         });
         if(!isAvailable){
-     return res.status(400).json({ messge: "Room is not available" , success: false})
+     return res.status(400).json({ message: "Room is not available" , success: false})
         }
 
 
@@ -151,7 +151,7 @@ export const getHotelBookings = async (req, res) => {
     try{
         const { id } = req.user;
         
-        const hotels = await Hotel.find({ owner: id}). select("_id");
+        const hotels = await Hotel.find({ owner: id}).select("_id");
         if(!hotels) {
             return res.status(404).json({ message: "Hotels not found", success: false});
 

@@ -1,70 +1,90 @@
-import {  createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {hotelsData, roomsData} from "../assets/assets.js";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL= "http://localhost:4000";
+axios.defaults.baseURL = "http://localhost:4000";
 
-export const AppContext= createContext();
+export const AppContext = createContext();
 
-const AppContextProvider = ({ children })=> {
-    const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const[owner, setOwner] = useState(null);
-    const[hotelData,setHotelData]= useState([]);
-    const[roomData,setRoomData]= useState([]);
+const AppContextProvider = ({ children }) => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [owner, setOwner] = useState(null);
+  const [hotelData, setHotelData] = useState([]);
+  const [roomData, setRoomData] = useState([]);
 
-
-
-const checkUserLoggedInOrNot= async()=>{
-    try{
-const {data}= await axios.get("/api/user/is-auth");
-if (data.success) {
-    setUser (true);
-} 
-    
+  // Check if user is logged in
+  const checkUserLoggedInOrNot = async () => {
+    try {
+      const { data } = await axios.get("/api/user/is-auth");
+      if (data.success) {
+        setUser(data.user); // Backend se user info lena better hai
+        if (data.user.role === "owner") {
+          setOwner(data.user);
+        }
+      } else {
+        setUser(false);
+      }
+    } catch (error) {
+      console.log("Auth error:", error.response?.data || error.message);
+      setUser(false);
     }
-    catch (error){
-console.log("error", error);
-    }
-};
-    const fetchHotelsData= async ()=>{
-      try{
-      const {data} = await axios.get("/api/hotel/get-all");
+  };
+
+  // Fetch all hotels (for admin/general view)
+  const fetchHotelsData = async () => {
+    try {
+      const { data } = await axios.get("/api/hotel/get-all");
       if (data.success) {
         setHotelData(data.hotels);
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to fetch hotels");
       }
     } catch (error) {
-  toast.error(data.message);
+      toast.error(error.response?.data?.message || error.message);
     }
-    };
- const fetchRoomsData= async()=>{
-       try {
- const {data} =await axios.get("/api/room/get-all");
- if(data.success) {
-  setRoomData(data.rooms);
- } else{
-  toast.error(data.message);
- }
-} catch (error) {
-toast.error(error.message);
-}
-    };
+  };
 
+  // Fetch all rooms
+  const fetchRoomsData = async () => {
+    try {
+      const { data } = await axios.get("/api/room/get-all");
+      if (data.success) {
+        setRoomData(data.rooms);
+      } else {
+        toast.error(data.message || "Failed to fetch rooms");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
 
-useEffect(()=>{
+  useEffect(() => {
     checkUserLoggedInOrNot();
     fetchHotelsData();
     fetchRoomsData();
-},[]);
-const value = {navigate ,user,setUser,owner,setOwner,hotelData,roomData,roomsData: roomData,axios,};
-   
+  }, []);
 
-return (
-<AppContext.Provider value={value}>{children}</AppContext.Provider>
-);
+  return (
+    <AppContext.Provider
+      value={{
+        navigate,
+        user,
+        setUser,
+        owner,
+        setOwner,
+        hotelData,
+        roomData,
+        setHotelData,
+        setRoomData,
+        axios,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export default AppContextProvider;

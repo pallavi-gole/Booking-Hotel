@@ -1,10 +1,11 @@
-import React, { useContext } from 'react'
-import { AppContext } from '../context/AppContext'
-import { motion } from "framer-motion"
+import React, { useContext } from 'react';
+import { AppContext } from '../context/AppContext';
+import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
 
 const MostPicked = () => {
-
-  const { hotelData } = useContext(AppContext)
+  const { hotelData } = useContext(AppContext);
+  const navigate = useNavigate();
 
   return (
     <div className='py-16'>
@@ -23,6 +24,7 @@ const MostPicked = () => {
             animate={{ y: [0, -30, 0] }}
             transition={{ duration: 2, ease: "easeInOut", repeat: Infinity }}
             className="relative group rounded-lg overflow-hidden cursor-pointer"
+            onClick={() => navigate(`/hotel/${item._id}`)}  // navigate to hotel detail
           >
             <img
               src={`http://localhost:4000/images/${item.image}`}
@@ -43,4 +45,4 @@ const MostPicked = () => {
   )
 }
 
-export default MostPicked
+export default MostPicked;

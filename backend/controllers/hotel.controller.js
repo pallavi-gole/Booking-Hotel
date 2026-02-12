@@ -1,4 +1,23 @@
 import Hotel from "../models/hotel.model.js";
+import Room from "../models/room.model.js"; // Room model import karna
+
+// Get hotel detail by ID + rooms
+export const getHotelById = async (req, res) => {
+    try {
+        const hotelId = req.params.id;
+        const hotel = await Hotel.findById(hotelId);
+        if (!hotel) {
+            return res.status(404).json({ message: "Hotel not found", success: false });
+        }
+
+        const rooms = await Room.find({ hotel: hotelId });
+
+        return res.status(200).json({ hotel, rooms, success: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
 
 
 export const registerHotel = async (req , res) =>{

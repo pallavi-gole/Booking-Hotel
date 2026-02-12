@@ -2,7 +2,7 @@
 import {Routes, Route, useLocation} from "react-router-dom";
  import Home from "./pages/Home";
 import Hotels from "./pages/Hotels";
-import Rooms from "./pages/Rooms";
+
 
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -21,6 +21,7 @@ import AllRooms from "./pages/owner/AllRooms";
 import AddRoom from "./pages/owner/AddRoom";
 import Bookings from "./pages/owner/Bookings";
 import Loader from "./components/Loader";
+import HotelDetail from "./pages/HotelDetail";
 
 const App = () => {
  
@@ -34,7 +35,7 @@ const {owner} = useContext(AppContext)
       <Routes>
         <Route path = "/" element= {<Home />} />
  <Route path = "/hotels" element= {<Hotels />} />
-  <Route path = "/rooms" element= {<Rooms />} />
+  <Route path = "/hotel/:id" element= {<HotelDetail />} />
 <Route path="/room/:id" element= {<SingleRoom />} />
     <Route path = "/signup" element= {<Signup />} />
      <Route path = "/login" element= {<Login />} />
