@@ -20,7 +20,8 @@ const Hotels = () => {
             onClick={() => navigate(`/hotel/${item._id}`)}
           >
             <img
-              src={`http://localhost:4000/images/${item.image}`}
+              src={`${import.meta.env.VITE_BACKEND_URL}/images/${item.image}`}
+
               alt={item.hotelName}
               className="w-56 h-56 object-cover object-top"
             />
