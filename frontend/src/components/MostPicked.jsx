@@ -27,7 +27,8 @@ const MostPicked = () => {
             onClick={() => navigate(`/hotel/${item._id}`)}  // navigate to hotel detail
           >
             <img
-              src={`http://localhost:4000/images/${item.image}`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/images/${item.image}`}
+
               alt=""
               className="size-56 object-cover object-top"
             />
