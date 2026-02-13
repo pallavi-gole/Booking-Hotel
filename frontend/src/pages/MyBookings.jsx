@@ -118,9 +118,10 @@ const MyBookings = () => {
                     <div className="col-span-1 md:col-span-4">
                       <div className="flex gap-4">
                         <img
-                          src={`http://localhost:4000/images/${
-                            booking.room?.images?.[0] || "default.png"
-                          }`}
+                          src={`${import.meta.env.VITE_BACKEND_URL}/images/${
+  booking.room?.images?.[0] || "default.png"
+}`}
+
                           alt={booking.room?.roomType || "Room"}
                           className="w-20 h-16 md:w-24 md:h-20 rounded-lg object-cover flex-shrink-0"
                         />
