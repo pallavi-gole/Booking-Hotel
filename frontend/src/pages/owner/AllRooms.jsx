@@ -90,7 +90,7 @@ const AllRooms = () => {
                         <img
                           src={
                             room?.images?.[0]
-                              ? `http://localhost:4000/images/${room.images[0]}`
+                              ? `${import.meta.env.VITE_BACKEND_URL}/images/${room.images[0]}`
                               : "https://via.placeholder.com/100"
                           }
                           alt={room?.roomType || "Room Image"}
