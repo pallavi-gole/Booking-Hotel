@@ -58,6 +58,8 @@ const token = jwt.sign ({id: user._id ,role: user.role},process.env.JWT_SECRET,{
 
 res.cookie("token",token,{
     httpOnly: true,
+    secure: true,
+    sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
 });
 return res.json({ message: "login successful", success: true, user
@@ -71,7 +73,11 @@ return res.json({ message: "login successful", success: true, user
 
 export const logout= async(req,res)=>{
     try{
-        res.clearCookie("token");
+        res.clearCookie("token", {
+httpOnly: true,
+            secure: true,
+            sameSite: "None",
+        });
         return res.json({message: "logout successful", success: true});
     } catch (error) {
         return res.json({ message: "internal server error", success: false});
