@@ -12,7 +12,9 @@ const HotelDetail = () => {
   useEffect(() => {
     const fetchHotel = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/hotel/${id}`);
+      const res = await axios.get(`/api/hotel/${id}`);
+
+
         console.log(res.data);
         setHotel(res.data.hotel);
         setRooms(res.data.rooms); // rooms of this hotel
@@ -30,7 +32,8 @@ const HotelDetail = () => {
       {/* Hotel Info */}
       <div className="mb-12 text-center">
         <img
-          src={`http://localhost:4000/images/${hotel.image}`}
+          src={`${import.meta.env.VITE_BACKEND_URL}/images/${hotel.image}`}
+
           alt={hotel.hotelName}
           className="w-full max-w-3xl h-72 object-cover mx-auto rounded-lg"
         />
