@@ -17,8 +17,13 @@ const RoomCard = ({ room }) => {
       <div className="rounded-xl shadow-xl overflow-hidden transition-all duration-300
       ease-out max-w-80 bg-white px-3 md:px-5">
 
-        <img src={`http://localhost:4000/images/${room.images[0]}`}
-         alt="" className="w-full h-52 object-cover" />
+        
+         <img
+  src={`${import.meta.env.VITE_BACKEND_URL}/images/${room.images[0]}`}
+  alt=""
+  className="w-full h-52 object-cover"
+/>
+
 
         <h1 className="mt-3 px-4 pt-3 mb-1 text-lg font-semibold text-heading">
           {room.roomType}
