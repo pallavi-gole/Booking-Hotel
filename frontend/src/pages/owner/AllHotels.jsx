@@ -21,7 +21,7 @@ const AllHotels = () => {
         toast.error(data.message);
       }
     } catch (error) {
-  toast.error(data.message);
+  toast.error(error.message);
     }
   }
 
@@ -136,7 +136,8 @@ Action
       <td className="px-6 py-6">
         <div className="flex items-center space-x-4">
 <div className="relative">
-  <img src={`http://localhost:4000/images/${hotel.images}`}
+  <img src={`${import.meta.env.VITE_BACKEND_URL}/images/${hotel.images}`}
+
   alt={hotel.hotelName} 
   className="w-20 h-16 rounded-xl object-cover shadow-md"
   />
