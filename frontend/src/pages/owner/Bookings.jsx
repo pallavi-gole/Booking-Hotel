@@ -78,7 +78,7 @@ const Bookings = () => {
         return CheckCircle
         case "pending":
           return Clock;
-          case "Cancelled":
+          case "cancelled":
             return XCircle;
             default:
               return Clock;
@@ -117,7 +117,7 @@ font-semibold text-gray-700">
 
 <div className="divide-y divide-gray-200">
   {bookingData.map((booking) => {
-    const statusIcon = getStatusIcon(booking.status);
+    const StatusIcon = getStatusIcon(booking.status);
     return(
       <div key={booking._id}
       className="p-6 hover:bg-gray-50 transition-colors"
@@ -127,7 +127,8 @@ font-semibold text-gray-700">
 {/* Hotel & Room Info */}
 <div className="col-span-1 md:col-span-4">
   <div className="flex gap-4"> 
-<img src={`http://localhost:4000/images/${booking.room.images[0]}`}
+<img src={`${import.meta.env.VITE_BACKEND_URL}/images/${booking.room.images[0]}`}
+
  alt={booking.room.roomType}
  className="w-20 h-16 md:w-24 md:h-20 rounded-lg object-cover
  flex-shrink-0"
@@ -229,7 +230,7 @@ font-semibold text-gray-700">
 )}`}>
 </div>
 
-<statusIcon 
+<StatusIcon 
 className= {`w-4 h-4 ${getStatusTextColor(
   booking.status
 )}`} />
