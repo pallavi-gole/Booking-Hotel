@@ -205,7 +205,8 @@ const onSubmitHandler = async (e) => {
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <img
-                src={`http://localhost:4000/images/${room?.images?.[selectedImage]}`}
+               src={`${import.meta.env.VITE_BACKEND_URL}/images/${room?.images?.[selectedImage]}`}
+
                 alt={`${room?.roomType} - Image ${selectedImage + 1}`}
                 className="w-full h-96 object-cover rounded-xl"
               />
@@ -215,7 +216,8 @@ const onSubmitHandler = async (e) => {
               {room?.images?.map((image, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:4000/images/${image}`}
+                  src={`${import.meta.env.VITE_BACKEND_URL}/images/${image}`}
+
                   alt={`Thumbnail ${index + 1}`}
                   className={`h-24 lg:h-20 object-cover rounded-lg cursor-pointer transition-all duration-200 ${
                     selectedImage === index
