@@ -193,7 +193,6 @@ export const getHotelBookings = async (req, res) => {
 
 // payment
 
-
 export const stripePayment = async (req, res) => {
   try {
     const { bookingId } = req.body;
@@ -202,8 +201,13 @@ export const stripePayment = async (req, res) => {
       return res.status(400).json({ message: "Booking ID is required" });
     }
 
+    // check stripe key
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.log("Stripe key missing");
+      return res.status(500).json({ message: "Stripe key missing" });
+    }
+
     const booking = await Booking.findById(bookingId);
-    console.log("Booking:", booking);
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -214,42 +218,46 @@ export const stripePayment = async (req, res) => {
     }
 
     const roomData = await Room.findById(booking.room).populate("hotel");
-    console.log("Room Data:", roomData);
 
     if (!roomData) {
       return res.status(404).json({ message: "Room not found" });
     }
 
     const totalPrice = booking.totalPrice;
-    const origin = req.headers.origin || "http://localhost:5173";
+
+    if (!totalPrice || totalPrice <= 0) {
+      return res.status(400).json({ message: "Invalid total price" });
+    }
 
     const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
-    const line_items = [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: roomData.hotel?.hotelName || "Hotel Room",
-          },
-          unit_amount: totalPrice ? totalPrice * 100 : 0,
-        },
-        quantity: 1,
-      },
-    ];
-
     const session = await stripeInstance.checkout.sessions.create({
-      line_items,
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: roomData.hotel?.hotelName || "Hotel Room",
+            },
+            unit_amount: totalPrice * 100,
+          },
+          quantity: 1,
+        },
+      ],
       mode: "payment",
-      success_url: `${origin}/loader/my-bookings`,
-      cancel_url: `${origin}/my-bookings`,
-      metadata: { bookingId },
+      success_url: `${process.env.FRONTEND_URL}/loader/my-bookings`,
+      cancel_url: `${process.env.FRONTEND_URL}/my-bookings`,
+      metadata: {
+        bookingId,
+      },
     });
 
     res.json({ success: true, url: session.url });
+
   } catch (error) {
-    console.log("Stripe Payment Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Stripe Payment Error:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
