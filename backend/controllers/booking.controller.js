@@ -71,9 +71,19 @@ export const bookRoom = async (req,res) => {
         // get total price for room
 
 
-        const roomData = await Room.findById(room).populate("hotel");
-       
-        let totalPrice = roomData.pricePerNight;
+       const roomData = await Room.findById(room).populate("hotel");
+
+if (!roomData) {
+    return res.status(404).json({ message: "Room not found" });
+}
+
+if (!roomData.hotel) {
+    return res.status(404).json({ message: "Hotel not found" });
+}
+
+if (!persons || persons <= 0) {
+    return res.status(400).json({ message: "Invalid persons value" });
+}
 
 
 // calculate totalprice based on per night
