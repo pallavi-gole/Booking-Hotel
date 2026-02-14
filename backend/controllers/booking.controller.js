@@ -48,94 +48,98 @@ export const checkRoomAvailability = async (req, res) => {
 
 
 // api to book a room
+export const bookRoom = async (req, res) => {
+  try {
+    const { id } = req.user;
 
-export const bookRoom = async (req,res) => {
-    try{
-        const {id} = req.user;
-
-        const user = await User.findById(id);
-        const {room, checkInDate, checkOutDate, persons, paymentMethod } = req.body;
-
-        
-        // before booking check availability
-        const isAvailable = await checkAvailability({
-            room,
-            checkInDate,
-            checkOutDate,
-        });
-        if(!isAvailable){
-     return res.status(400).json({ message: "Room is not available" , success: false})
-        }
-
-
-        // get total price for room
-
-
-       const roomData = await Room.findById(room).populate("hotel");
-
-if (!roomData) {
-    return res.status(404).json({ message: "Room not found" });
-}
-
-if (!roomData.hotel) {
-    return res.status(404).json({ message: "Hotel not found" });
-}
-
-if (!persons || persons <= 0) {
-    return res.status(400).json({ message: "Invalid persons value" });
-}
-
-
-// calculate totalprice based on per night
-
-const checkIn= new Date(checkInDate);
-const checkOut= new Date(checkOutDate);
-const timeDiff= checkOut.getTime() - checkIn.getTime();
-const nights = Math.ceil(timeDiff /(1000* 3600 *24));
-totalPrice = totalPrice * nights * persons;
-
-
-const booking = await Booking.create({
-    user: id,
-    room,
-    hotel: roomData.hotel._id,
-    checkIn,
-    checkOut,
-    persons,
-    totalPrice,
-    paymentMethod,
-});
-
-const mailOptions={
-    from:process.env.SENDER_EMAIL,
-    to:user.email,
-    subject:"Room Booked Successfully",
-    html:`
-    <h1>Hotel Booking Confirmation</h1>
-
-    <p>Dear ${user.name},</p>
-    <p> Thank you for booking with us. Your booking details are as follows:
-    </p>
-    <ul>
-    <li>Booking ID: ${booking._id}</li>
-    <li>Hotel: ${roomData.hotel.hotelName}</li>
-     <li>Room Type: ${roomData.roomType}</li>
-      <li>Check-in Date: ${checkInDate}</li>
-       <li>Check-out Date: ${checkOutDate}</li>
-        <li>Number of Persons: ${persons}</li>
-         <li>Total Price: ${process.env.CURRENCY || "$"} ${totalPrice}</li>
-    </ul>
-    `,
-};
-
- await transporter.sendMail(mailOptions);
-
-
-
-   res.json({ success: true, message: "Room Booked Successfully"});
-    } catch (error) {
-        res.status(500) .json({ message: "Internal server error"});
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    const { room, checkInDate, checkOutDate, persons, paymentMethod } =
+      req.body;
+
+    if (!room || !checkInDate || !checkOutDate || !persons) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // check availability
+    const isAvailable = await checkAvailability({
+      room,
+      checkInDate,
+      checkOutDate,
+    });
+
+    if (!isAvailable) {
+      return res
+        .status(400)
+        .json({ message: "Room is not available", success: false });
+    }
+
+    // get room data
+    const roomData = await Room.findById(room).populate("hotel");
+
+    if (!roomData) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    if (!roomData.hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    // calculate price
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+
+    const timeDiff = checkOut.getTime() - checkIn.getTime();
+    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    if (nights <= 0) {
+      return res.status(400).json({ message: "Invalid dates" });
+    }
+
+    let totalPrice = roomData.pricePerNight * nights * persons;
+
+    // create booking
+    const booking = await Booking.create({
+      user: id,
+      room,
+      hotel: roomData.hotel._id,
+      checkIn,
+      checkOut,
+      persons,
+      totalPrice,
+      paymentMethod,
+    });
+
+    // ❗ TEMPORARY: comment email if causing error
+    /*
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Room Booked Successfully",
+      html: `
+        <h1>Hotel Booking Confirmation</h1>
+        <p>Dear ${user.name},</p>
+        <p>Your booking is confirmed.</p>
+        <ul>
+          <li>Booking ID: ${booking._id}</li>
+          <li>Hotel: ${roomData.hotel.hotelName}</li>
+          <li>Room Type: ${roomData.roomType}</li>
+          <li>Total Price: ${process.env.CURRENCY || "$"} ${totalPrice}</li>
+        </ul>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    */
+
+    res.json({ success: true, message: "Room Booked Successfully" });
+  } catch (error) {
+    console.log("Book Room Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 
