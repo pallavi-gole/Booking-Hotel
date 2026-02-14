@@ -4,7 +4,7 @@ import Hotel from "../models/hotel.model.js";
 import User from "../models/user.model.js";
 import transporter from "../config/nodemailer.js";
 
-import stripe from "stripe";
+import Stripe from "stripe";
 // function to check Availability of room
 
 export const checkAvailability = async ({ room, checkInDate, checkOutDate,}) => {
@@ -229,7 +229,7 @@ export const stripePayment = async (req, res) => {
       return res.status(400).json({ message: "Invalid total price" });
     }
 
-    const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
+    const stripeInstance = Stripe(process.env.STRIPE_SECRET_KEY);
 
     const session = await stripeInstance.checkout.sessions.create({
       payment_method_types: ["card"],
