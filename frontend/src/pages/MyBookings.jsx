@@ -34,6 +34,7 @@ const MyBookings = () => {
     }
 
     try {
+      console.log("sending bookingId:",bookingId);
       const { data } = await axios.post("/api/bookings/stripe-payment", {
         bookingId,
       });
