@@ -16,6 +16,6 @@ bookingRouter.post("/check-availability", checkRoomAvailability);
 bookingRouter.post("/book",isAuthenticated, bookRoom);
 bookingRouter.get("/user", isAuthenticated,getUserBookings);
 bookingRouter.get("/hotel", isAuthenticated, isOwner, getHotelBookings);
-bookingRouter.post("/stripe-payment", isAuthenticated, stripePayment);
+bookingRouter.post("/stripe-payment", stripePayment);
 
 export default bookingRouter;
