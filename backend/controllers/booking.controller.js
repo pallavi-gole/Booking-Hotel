@@ -229,7 +229,7 @@ export const stripePayment = async (req, res) => {
       return res.status(400).json({ message: "Invalid total price" });
     }
 
-    const stripeInstance = Stripe(process.env.STRIPE_SECRET_KEY);
+    const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const session = await stripeInstance.checkout.sessions.create({
       payment_method_types: ["card"],
