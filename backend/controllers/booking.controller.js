@@ -246,7 +246,7 @@ export const stripePayment = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `https://booking-hotel-7.onrender.com/loader/my-bookings`,
+      success_url: `https://booking-hotel-7.onrender.com/my-bookings`,
 cancel_url: `https://booking-hotel-7.onrender.com/my-bookings`,
 
       metadata: {
