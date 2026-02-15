@@ -257,9 +257,10 @@ cancel_url: `https://booking-hotel-7.onrender.com/my-bookings`,
     res.json({ success: true, url: session.url });
 
   } catch (error) {
-    console.log("Stripe Payment Error:", error.message);
-    res.status(500).json({ message: error.message });
-  }
+  console.log("FULL Stripe Error:", error);
+  res.status(500).json({ message: error.message });
+}
+
 };
 
 
