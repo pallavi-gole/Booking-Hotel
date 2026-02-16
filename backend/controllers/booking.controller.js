@@ -240,7 +240,7 @@ export const stripePayment = async (req, res) => {
             product_data: {
               name: roomData.hotel?.hotelName || "Hotel Room",
             },
-            unit_amount: totalPrice * 100,
+            unit_amount: Math.round(totalPrice * 100),
           },
           quantity: 1,
         },
