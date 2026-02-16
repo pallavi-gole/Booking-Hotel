@@ -256,10 +256,26 @@ cancel_url: `https://booking-hotel-7.onrender.com/my-bookings`,
 
     res.json({ success: true, url: session.url });
 
-  } catch (error) {
-  console.log("FULL Stripe Error:", error);
-  res.status(500).json({ message: error.message });
+//   } catch (error) {
+//   console.log("FULL Stripe Error:", error);
+//   res.status(500).json({ message: error.message });
+// }
+
+
+} catch (error) {
+  console.log("🔥🔥 STRIPE FULL ERROR START 🔥🔥");
+  console.log(error);
+  console.log("Message:", error.message);
+  console.log("Type:", error.type);
+  console.log("Raw:", error.raw);
+  console.log("🔥🔥 STRIPE FULL ERROR END 🔥🔥");
+
+  res.status(500).json({ 
+    message: error.message || "Stripe failed" 
+  });
 }
+
+
 
 };
 
