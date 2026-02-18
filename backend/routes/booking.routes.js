@@ -8,6 +8,7 @@ import {
     getHotelBookings,
     getUserBookings,
     stripePayment,
+    verifyStripePayment
 } from "../controllers/booking.controller.js";
 const bookingRouter = express.Router();
 
@@ -17,5 +18,8 @@ bookingRouter.post("/book",isAuthenticated, bookRoom);
 bookingRouter.get("/user", isAuthenticated,getUserBookings);
 bookingRouter.get("/hotel", isAuthenticated, isOwner, getHotelBookings);
 bookingRouter.post("/stripe-payment", isAuthenticated, stripePayment);
+bookingRouter.get("/verify/:bookingId", verifyStripePayment);
+
+
 
 export default bookingRouter;

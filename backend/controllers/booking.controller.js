@@ -255,8 +255,9 @@ const booking = await Booking.findOne({
         },
       ],
       mode: "payment",
-      success_url: `https://booking-hotel-7.onrender.com/my-bookings?success=true`,
-cancel_url: `https://booking-hotel-7.onrender.com/my-bookings`,
+     success_url: `${process.env.BACKEND_URL}/api/bookings/verify/${bookingId}?success=true`,
+cancel_url: `${process.env.FRONTEND_URL}/my-bookings`,
+
 
       metadata: {
         bookingId,
@@ -287,5 +288,27 @@ cancel_url: `https://booking-hotel-7.onrender.com/my-bookings`,
 
 
 };
+
+
+
+
+export const verifyStripePayment = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { success } = req.query;
+
+    if (success === "true") {
+      await Booking.findByIdAndUpdate(bookingId, {
+        isPaid: true,
+        status: "confirmed",
+      });
+    }
+
+    res.redirect(`${process.env.FRONTEND_URL}/my-bookings`);
+  } catch (error) {
+    res.status(500).json({ message: "Payment verification failed" });
+  }
+};
+
 
 
