@@ -45,10 +45,8 @@ const MyBookings = () => {
         toast.error(data.message);
       }
     } catch (error) {
-  console.log("Stripe frontend error:", error.response?.data);
-  toast.error(error.response?.data?.message || error.message);
-}
-
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {

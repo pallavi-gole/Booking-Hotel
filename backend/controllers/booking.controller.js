@@ -207,7 +207,16 @@ export const stripePayment = async (req, res) => {
       return res.status(500).json({ message: "Stripe key missing" });
     }
 
-    const booking = await Booking.findById(bookingId);
+    // const booking = await Booking.findById(bookingId);
+
+const { id } = req.user;
+
+const booking = await Booking.findOne({
+  _id: bookingId,
+  user: id,
+});
+
+
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
